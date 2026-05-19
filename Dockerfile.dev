@@ -1,0 +1,28 @@
+# ---------- Base ----------
+FROM node:20.20.2-alpine3.23 AS base
+
+# Argumentos configurables
+ARG APP_DIR=/app
+ARG PORT=3000
+
+WORKDIR ${APP_DIR}
+
+# ---------- Dependencies ----------
+FROM base AS deps
+
+COPY package*.json ./
+
+RUN npm install
+
+# ---------- Development ----------
+FROM base AS dev
+
+ENV NODE_ENV=development
+
+COPY --from=deps ${APP_DIR}/node_modules ./node_modules
+
+COPY . .
+
+EXPOSE ${PORT}
+
+CMD ["sh", "-c", "  npm run tsc:watch &  npm run dev"]

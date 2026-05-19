@@ -1,0 +1,35 @@
+# ---------- Base ----------
+FROM node:20.20.2-alpine3.23 AS base
+
+# Argumentos configurables
+ARG APP_DIR=/app
+ARG PORT=3000
+
+WORKDIR ${APP_DIR}
+
+FROM base AS build-deps
+COPY package*.json ./
+RUN npm ci
+
+FROM build-deps AS build
+COPY . .
+RUN npm run build
+
+# ---------- test ----------
+FROM build-deps AS test
+COPY . .
+RUN npm run test
+
+# ---------- prod ----------
+FROM node:20.20.2-alpine3.23 AS prod
+ENV NODE_ENV=production
+WORKDIR ${APP_DIR}
+
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+COPY --from=build ${APP_DIR}/dist ./dist
+
+USER node
+EXPOSE ${PORT}
+CMD ["node", "dist/index.js"]
