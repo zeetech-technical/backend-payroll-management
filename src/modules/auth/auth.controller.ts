@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { compareHashChain } from "../../utils/bycript";
 import { verifyToken } from "../../utils/token";
 
-import { AuthSignInSchema, AuthVerifyOtpSchema } from "./auth.schema";
+import { AuthSignInSchema } from "./auth.schema";
 import { AuthService } from "./auth.service";
 
 import logger from "../../utils/logger";
@@ -42,11 +42,8 @@ export const signIn = async (
     }
 
     const { password, ...userPayload } = user.get({ plain: true });
-    const { accessToken, refreshToken } = await authService.generateTokens(
-      userPayload,
-      metadata,
-    );
-    authService.emitCookie(res, "refresh_token", refreshToken);
+    const accessToken = await authService.generateTokens(userPayload);
+
     res.json({ "access-token": accessToken });
   } catch (error) {
     next(error);
@@ -62,7 +59,6 @@ export const refreshToken = async (
   const refreshToken = req.cookies["refresh_token"];
   const payload = verifyToken(token, true);
 
-
   if (!payload) {
     return next({ type: "custom_error", code: "TOKEN_EXPIRED" });
   }
@@ -71,37 +67,13 @@ export const refreshToken = async (
   if (!userId || !deviceId) {
     return next({ type: "custom_error", code: "TOKEN_EXPIRED" });
   }
+  const user = await authService.foundUserById(userId);
+  if (!user) return next({ type: "custom_error", code: "INVALID_CREDENTIALS" });
 
-  // const key = `auth:refresh:${userId}:${deviceId}`;
-  // const session = await redis.get(key);
+  const { password, ...userPayload } = user.get({ plain: true });
+  const accessToken = await authService.generateTokens(userPayload);
 
-  // if (!session) {
-  //   return next({ type: "custom_error", code: "TOKEN_EXPIRED" });
-  // }
-
-  // const sessionData = JSON.parse(session);
-  // const tokenHash = createHash("sha256").update(refreshToken).digest("hex");
-
-  // if (sessionData.tokenHash !== tokenHash) {
-  //   return next({ type: "custom_error", code: "TOKEN_EXPIRED" });
-  // }
-
-  // const user = await authService.foundUserById(userId);
-  // const { password, ...userPayload } = user.get({ plain: true });
-
-  // const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-  //   await authService.generateTokens(
-  //     userPayload,
-  //     {
-  //       deviceInfo: sessionData.deviceInfo,
-  //       userAgent: sessionData.userAgent,
-  //       ip: sessionData.ip,
-  //     },
-  //     deviceId,
-  //   );
-
-  // authService.emitCookie(res, "refresh_token", newRefreshToken);
-  // return res.json({ "access-token": newAccessToken });
+  return res.json({ "access-token": accessToken });
 };
 
 export const signOut = async (
@@ -109,18 +81,16 @@ export const signOut = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user) {
-    return next({ type: "custom_error", code: "SESSION_REVOKED" });
-  }
-  const { sub, deviceId } = req.user;
-
-  try {
-    await authService.deleteSession(sub, deviceId);
-    authService.clearCookie(res, "refresh_token");
-    return res.status(204).send();
-  } catch (error) {
-    console.log(error);
-  }
+  // if (!req.user) {
+  //   return next({ type: "custom_error", code: "SESSION_REVOKED" });
+  // }
+  // const { sub, deviceId } = req.user;
+  // try {
+  //   // await authService.deleteSession(sub, deviceId);
+  //   return res.status(204).send();
+  // } catch (error) {
+  //   console.log(error);
+  // }
 };
 
 export const signOutAllDevices = async (
@@ -153,12 +123,7 @@ export const listDevices = async (
   }
 };
 
-
-export const me = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const me = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) return next({ type: "custom_error", code: "SESSION_REVOKED" });
   const { sub } = req.user;
   try {
@@ -168,4 +133,3 @@ export const me = async (
     next(error);
   }
 };
-

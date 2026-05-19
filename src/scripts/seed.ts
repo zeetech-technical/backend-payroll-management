@@ -4,12 +4,14 @@ import logger from "../utils/logger";
 import { seedPermissions } from "../modules/permissions/permissions.seed";
 import { seedRoles } from "../modules/roles/roles.seed";
 import { seedUsers } from "../modules/user/user.seed";
+import { seedTypeCatalog } from "../modules/catalogs/type_catalog.seed";
+import { seedCatalog } from "../modules/catalogs/catalog.seed";
 
 const seed = async () => {
   try {
     await sequelize.authenticate();
     await sequelize.sync({ force: true });
-    await Promise.all([seedPermissions(), seedRoles(), seedUsers()]);
+    await Promise.all([seedPermissions(), seedRoles(), seedUsers(), seedTypeCatalog(), seedCatalog()]);
     logger.info("[seed] seeds finished successfully");
     process.exit(0);
   } catch (error) {

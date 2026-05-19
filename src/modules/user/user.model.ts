@@ -83,8 +83,7 @@ User.init(
     },
   },
 );
-// User.belongsTo(Tenant, { foreignKey: "tenantId", as: "tenant" });
-// Tenant.hasMany(User, { foreignKey: "tenantId", as: "users" });
+
 
 export const UserRoles = sequelize.define(
   "user_roles",

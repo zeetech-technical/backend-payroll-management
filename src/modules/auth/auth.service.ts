@@ -72,86 +72,11 @@ export class AuthService {
   }
 
   // TOKENS SESSIONS
-  async generateTokens(
-    user: User,
-    data: Pick<ISession, "deviceInfo" | "userAgent" | "ip">,
-    identifierDevice?: string,
-  ) {
-    const deviceId = identifierDevice || randomUUID();
-    const refreshToken = randomUUID();
-
-    const accessToken = signPayload(
-      {
-        sub: user.id,
-        deviceId,
-      },
-      { expiresIn: "15m" },
-    );
-
-    await this.saveSession({
-      userId: user.id,
-      deviceId,
-      refreshToken,
-      ...data,
+  async generateTokens(user: User) {
+    const accessToken = signPayload({
+      sub: user.id,
     });
-    return { accessToken, refreshToken };
-  }
-
-  async saveSession(data: ISession) {
-    const sessionKey = `auth:refresh:${data.userId}:${data.deviceId}`;
-    const userIndexKey = `auth:refresh:user:${data.userId}`;
-
-    const tokenHash = createHash("sha256")
-      .update(data.refreshToken)
-      .digest("hex");
-
-    const session = {
-      tokenHash,
-      device: data.deviceInfo,
-      userAgent: data.userAgent,
-      ip: data.ip,
-    };
-
-    const ttl = 60 * 60 * 24 * 7;
-
-    // const pipeline = redis.multi();
-    // pipeline.set(sessionKey, JSON.stringify(session), "EX", ttl);
-    // pipeline.sadd(userIndexKey, data.deviceId);
-    // pipeline.expire(userIndexKey, ttl);
-
-    // await pipeline.exec();
-  }
-
-  async deleteSession(userId: number, deviceId: string) {
-    // const pipeline = redis.multi();
-    // pipeline.del(`auth:refresh:${userId}:${deviceId}`);
-    // pipeline.srem(`auth:refresh:user:${userId}`, deviceId);
-    // await pipeline.exec();
-  }
-
-  // 2FA TOKEN
-
-  async generate2FAToken(userId: number) {
-    // const jti = randomUUID();
-    // const tempToken = signPayload({ sub: userId, jti }, { expiresIn: "15m" });
-    // await redis.set(`auth:2FA:${jti}`, JSON.stringify({ userId }), "EX", 900);
-    // return tempToken;
-  }
-
-  // cookie BODY
-
-  emitCookie(res: Response, type: "refresh_token", value: any) {
-    // if (type === "refresh_token") {
-    //   res.cookie("refresh_token", value, this.cookieOptionsRefreshToken);
-    // }
-  }
-
-  clearCookie(res: Response, type: "refresh_token") {
-    if (type === "refresh_token") {
-      res.clearCookie("refresh_token", {
-        path: "/api/v1/auth/refresh-token",
-      });
-    }
+    return accessToken;
   }
 
   // format data from req
@@ -161,8 +86,8 @@ export class AuthService {
     // const ip = req.ip ?? null;
     return {
       deviceInfo: null,
-      userAgent : null,
-      ip : null,
+      userAgent: null,
+      ip: null,
     };
   }
 
@@ -174,10 +99,9 @@ export class AuthService {
   async getDataSession(userId: number) {
     return [];
   }
-  
 
   async deleteUserSessions(userId: number, sessions: string[]) {
-    return
+    return;
   }
 
   //   const result: string[] = [];

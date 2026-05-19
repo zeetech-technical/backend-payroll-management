@@ -16,8 +16,8 @@ export const getUsers = async (
     // const limitNumber = limit ? Number(limit) : 10;
     // const data = await userService.getUsers(pageNumber, limitNumber);
     // res.json({ pagination: { page: pageNumber, limit: limitNumber }, data });
-    const pagination = getPagination(5, 10, 500);
-    res.json({ pagination });
+    // const pagination = getPagination(5, 10, 500);
+    // res.json({ pagination });
   } catch (err) {
     next(err);
   }

@@ -23,28 +23,3 @@
  *                     tempToken:
  *                       type: string
  */
-
-/**
- * @openapi
- * /auth/verify-2fa:
- *   post:
- *     summary: Verificar código 2FA
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               tempToken:
- *                 type: string
- *               code:
- *                 type: string
- *             required:
- *               - tempToken
- *               - code
- *     responses:
- *       200:
- *         description: Token final
- */
