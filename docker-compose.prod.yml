@@ -10,16 +10,15 @@ services:
       - NODE_ENV=production
       - PORT=${PORT}
       - ORIGINS=${ORIGINS}
-      - JWT_SECRET={$JWT_SECRET}
-      - MARIADB_HOST=${MARIADB_HOST}
-      - MARIADB_PORT=${MARIADB_PORT}
-      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-      - MARIADB_DATABASE=${MARIADB_DATABASE}
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     restart: unless-stopped
     depends_on:
-      dbmariaserver:
+      db_pg:
         condition: service_healthy
   nginx:
     image: nginx:alpine
@@ -31,20 +30,18 @@ services:
     depends_on:
       - backend
 
-  dbmariaserver:
-    image: mariadb:lts-noble
-    restart: unless-stopped
-    container_name: ${MARIADB_HOST}
+  db_pg:
+    image: postgres:alpine
+    restart: always
+    container_name: ${POSTGRES_HOST}
     environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-      MARIADB_DATABASE: ${MARIADB_DATABASE}
-      MARIADB_USER: ${MARIADB_USER}
-      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
-      ADB_DATABASE: ${MARIADB_DATABASE}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${MARIADB_PORT}:3306"
+      - "5432"
     healthcheck:
-      test: ["CMD-SHELL", "echo hi"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
       timeout: 5s
       retries: 5
