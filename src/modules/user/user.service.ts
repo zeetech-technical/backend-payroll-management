@@ -6,7 +6,7 @@ import { ITCreateUserBody } from "./user.schema";
 export class UserService {
   constructor() {}
 
-  public async getUsers(page: number, limit: number): Promise<User[]> {
+  public async getUsers(): Promise<User[]> {
     return User.findAll({
       where: { deletedAt: null },
       include: [ 
@@ -33,8 +33,6 @@ export class UserService {
         through: { attributes: [] },
       },
       ],
-      limit,
-      offset: (page - 1) * limit,
     })
   }
 

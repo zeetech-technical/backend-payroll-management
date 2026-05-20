@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { UserService } from "./user.service";
 import { createUserSchema } from "./user.schema";
-import { getPagination } from "../../utils/paginate";
+// import { getPagination } from "../../utils/paginate";
 
 const userService = new UserService();
 
@@ -11,13 +11,9 @@ export const getUsers = async (
   next: NextFunction,
 ) => {
   try {
-    const { page, limit } = req.query;
-    // const pageNumber = page ? Number(page) : 1;
-    // const limitNumber = limit ? Number(limit) : 10;
-    // const data = await userService.getUsers(pageNumber, limitNumber);
-    // res.json({ pagination: { page: pageNumber, limit: limitNumber }, data });
-    // const pagination = getPagination(5, 10, 500);
-    // res.json({ pagination });
+    const id = req.user?.id
+    const data = await userService.getUsers();
+    return res.status(200).json(data.filter((user) => user.id !== id));
   } catch (err) {
     next(err);
   }

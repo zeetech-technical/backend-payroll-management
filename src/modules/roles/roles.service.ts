@@ -1,4 +1,4 @@
-import { Permissions } from "../permissions/permissions.model";
+// import { Permissions } from "../permissions/permissions.model";
 import { Roles } from "./roles.model";
 import { CreateRoleDto } from "./roles.schema";
 
@@ -6,19 +6,16 @@ export class RolesService {
   async getAllRoles() {
     try {
       const roles = await Roles.findAll({
-        where: {
-          deletedAt: null,
-        },
-        include: [
-          {
-            model: Permissions,
-            as: "permissions",
-            attributes: ["id", "name", "slug"],
-            through: {
-              attributes: [],
-            },
-          },
-        ],
+        // include: [
+        //   {
+        //     model: Permissions,
+        //     as: "permissions",
+        //     attributes: ["id", "name", "slug"],
+        //     through: {
+        //       attributes: [],
+        //     },
+        //   },
+        // ],
       });
       return roles;
     } catch (error) {

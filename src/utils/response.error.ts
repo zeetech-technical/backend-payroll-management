@@ -7,7 +7,8 @@ type IERRORS_CUSTOM =
   | "SESSION_REVOKED"
   | "SESSION_CLOSE_REDIS"
   | "UNAUTHORIZED"
-  | "TOO_MANY_REQUESTS";
+  | "TOO_MANY_REQUESTS"
+  | "NOT_FOUND";
 
 type ITINTERNAL_ERRORS =
   | "SequelizeValidationError"
@@ -51,6 +52,10 @@ const ERROR_RESPONSE_CUSTOM: Record<IERRORS_CUSTOM, ErrorResponseShape> = {
   TOO_MANY_REQUESTS: {
     code: 429,
     message: "Too many requests",
+  },
+    NOT_FOUND: {
+    code: 404,
+    message: "Resource not found",
   },
 };
 
