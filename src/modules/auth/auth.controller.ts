@@ -124,12 +124,14 @@ export const listDevices = async (
 };
 
 export const me = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.user) return next({ type: "custom_error", code: "SESSION_REVOKED" });
-  const { sub } = req.user;
-  try {
-    let user = await authService.me(sub);
-    res.json(user);
-  } catch (error) {
-    next(error);
-  }
+
+  return res.json(req.user);
+  // if (!req.user) return next({ type: "custom_error", code: "SESSION_REVOKED" });
+  // const { sub } = req.user;
+  // try {
+  //   let user = await authService.me(sub);
+  //   res.json(user);
+  // } catch (error) {
+  //   next(error);
+  // }
 };

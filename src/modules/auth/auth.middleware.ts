@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyToken } from "../../utils/token";
 import { UserService } from "../user/user.service";
+import logger from "../../utils/logger";
 
 const userService = new UserService();
 export const authMiddleware = async (
@@ -10,39 +11,35 @@ export const authMiddleware = async (
 ) => {
   const authHeader = req.headers.authorization;
 
-  // if (!authHeader || !authHeader.startsWith("Bearer ")) {
-  //   return next({ type: "custom_error", code: "NOT_TOKEN_PROVIDED" });
-  // }
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next({ type: "custom_error", code: "NOT_TOKEN_PROVIDED" });
+  }
 
-  // const token = authHeader.slice(7);
+  const token = authHeader.split(" ")[1];
 
   try {
-    // const payload = verifyToken(token);
-    // const { sub, deviceId } = payload;
-    // if (!sub || !deviceId) {
-    //   return next({ type: "custom_error", code: "INVALID_TOKEN_PAYLOAD" });
-    // }
+    const payload = verifyToken(token);
+    const { sub } = payload;
+    if (!sub) {
+      return next({ type: "custom_error", code: "INVALID_TOKEN_PAYLOAD" });
+    }
+    const user = await userService.getUser(Number(sub));
+    if (!user) {
+      return next({ type: "custom_error", code: "USER_NOT_FOUND" });
+    }
 
-    // const key = `auth:refresh:${sub}:${deviceId}`;
-    // const session = await redis.get(key);
 
-    // if (!session) {
-    //   return next({ type: "custom_error", code: "SESSION_REVOKED" });
-    // }
-    // req.token = token;
-    // req.user = payload;
+    req.token = token;
+    req.user = user.get({ plain: true });
 
-    // const user = await userService.getUser(Number(sub));
-    // if (!user) {
-    //   return next({ type: "custom_error", code: "USER_NOT_FOUND" });
-    // }
-    // const permissionSet = new Set<string>();
-    // user.permissions?.forEach(p => permissionSet.add(p.slug));
-    // user.roles?.forEach(role => {
-    //   role.permissions?.forEach(p => permissionSet.add(p.slug));
-    // });
-    // req.permissions = permissionSet;
-    
+
+    const permissionSet = new Set<string>();
+    user.permissions?.forEach(p => permissionSet.add(p.slug));
+    user.roles?.forEach(role => {
+      role.permissions?.forEach(p => permissionSet.add(p.slug));
+    });
+    req.permissions = permissionSet;
+
     next();
   } catch (error: any) {
     return next(error);
