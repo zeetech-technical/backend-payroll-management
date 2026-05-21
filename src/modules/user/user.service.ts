@@ -6,36 +6,24 @@ import { User, UserRoles } from "./user.model";
 import { ITCreateUserBody } from "./user.schema";
 
 export class UserService {
-  constructor() {}
-
-  public async getUsers(): Promise<User[]> {
-    return User.findAll({
-      where: { deletedAt: null },
+  constructor() { }
+  private queryInclude = [
+    {
+      model: Position,
+      as: "position",
+      attributes: ["id", "name"],
+    },
+    {
+      model: Roles,
+      as: "roles",
+      attributes: ["id", "name"],
+      through: {
+        attributes: [],
+      },
+      // where: {
+      //   name: "worker",
+      // },
       include: [
-        {
-          model: Position,
-          as: "position",
-          attributes: ["id", "name"],
-        },
-        {
-          model: Roles,
-          as: "roles",
-          attributes: ["id", "name"],
-          through: {
-            attributes: [],
-          },
-          // where: {
-          //   name: "worker",
-          // },
-          include: [
-            {
-              model: Permissions,
-              as: "permissions",
-              attributes: ["id", "name", "slug"],
-              through: { attributes: [] },
-            },
-          ],
-        },
         {
           model: Permissions,
           as: "permissions",
@@ -43,34 +31,24 @@ export class UserService {
           through: { attributes: [] },
         },
       ],
+    },
+    {
+      model: Permissions,
+      as: "permissions",
+      attributes: ["id", "name", "slug"],
+      through: { attributes: [] },
+    },
+  ]
+
+  public async getUsers(): Promise<User[]> {
+    return User.findAll({
+      paranoid: true,
+      include: this.queryInclude,
     });
   }
   public async getUser(id: number): Promise<User | null> {
     return User.findByPk(id, {
-      include: [
-        {
-          model: Roles,
-          as: "roles",
-          attributes: ["id", "name"],
-          through: {
-            attributes: [],
-          },
-          include: [
-            {
-              model: Permissions,
-              as: "permissions",
-              attributes: ["id", "name", "slug"],
-              through: { attributes: [] },
-            },
-          ],
-        },
-        {
-          model: Permissions,
-          as: "permissions",
-          attributes: ["id", "name", "slug"],
-          through: { attributes: [] },
-        },
-      ],
+      include: this.queryInclude,
     });
   }
 
@@ -129,5 +107,15 @@ export class UserService {
       { where: { id } },
     );
     return result[0];
+  }
+
+  public async assignPosition(userId: number, positionId: number) {
+    try {
+      await User.update({ positionId }, { where: { id: userId } });
+      const user = await this.getUser(userId);
+      return user;
+    } catch (error) {
+      throw error;
+    }
   }
 }

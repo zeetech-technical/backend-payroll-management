@@ -61,3 +61,18 @@ export const deleteUser = (req: Request, res: Response, next: NextFunction) => {
     msg: " Usuarios",
   });
 };
+
+export const assignPosition = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId, positionId } = req.body;
+
+  try {
+    const userPosition = await userService.assignPosition(userId, positionId);
+    return res.status(201).json(userPosition);
+  } catch (error) {
+    next(error);
+  }
+  res.json({
+    msg: "Usuarios",
+    userId, positionId
+  });
+};

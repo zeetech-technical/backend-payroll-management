@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  assignPosition,
   deleteUser,
   getUser,
   getUsers,
@@ -13,6 +14,7 @@ router
   .get("/", getUsers)
   .get("/:id", getUser)
   .post("/", postUser)
+  .post("/assign-position", assignPosition)
   .put("/", putUser)
   .delete("/:id", deleteUser);
 

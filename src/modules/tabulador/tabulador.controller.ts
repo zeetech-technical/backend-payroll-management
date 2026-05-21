@@ -32,31 +32,6 @@ export const getTabuladorAllStats = async (
         calcs,
       };
     });
-    // const dataConTotales = cpTabuladores.map((item) => {
-    //   const totalesGenerales = item.calcs.reduce(
-    //     (acc: any, calc: any) => {
-    //       return {
-    //         sueldoBaseTotal: acc.sueldoBaseTotal + (calc.sueldoBase || 0),
-    //         percepcionesTotal:
-    //           acc.percepcionesTotal + (calc.totalPercepciones || 0),
-    //         deduccionesTotal:
-    //           acc.deduccionesTotal + (calc.totalDeducciones || 0),
-    //         granTotal: acc.granTotal + (calc.total || 0),
-    //       };
-    //     },
-    //     {
-    //       sueldoBaseTotal: 0,
-    //       percepcionesTotal: 0,
-    //       deduccionesTotal: 0,
-    //       granTotal: 0,
-    //     },
-    //   );
-
-    //   return {
-    //     ...item,
-    //     totalesGenerales,
-    //   };
-    // });
     return res.status(200).json(cpTabuladores);
   } catch (error) {
     next(error);
