@@ -4,6 +4,13 @@ import logger from "../../utils/logger";
 export const seedPermissions = async () => {
   await Permissions.destroy({ where: {}, truncate: true });
   await Permissions.bulkCreate([
+    { slug: "DASHBOARD:ADMINISTRATOR", name: "Dashboard administrator" },
+    { slug: "DASHBOARD:WORKERS", name: "Dashboard workers" },
+    { slug: "DASHBOARD:USERS", name: "Route User" },
+    { slug: "DASHBOARD:CATALOGS", name: "Route catalogs" },
+    { slug: "DASHBOARD:TABULADOR", name: "Route tabulador" },
+    { slug: "DASHBOARD:POSITION", name: "Route position" },
+
     // USERS
     { slug: "USER:LIST", name: "List of users" },
     { slug: "USER:READ", name: "Read user" },

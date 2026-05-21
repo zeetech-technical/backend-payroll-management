@@ -8,17 +8,20 @@ import {
   getAllTabuladorConfig,
   getTabuladorAllStats,
   getTabuladorById,
+  getTabuladorUserStats,
 } from "./tabulador.controller";
 
 const router = Router();
 
-router.get("/stats", getTabuladorAllStats);
-router.get("/config", getAllTabuladorConfig);
-router.post("/config", createTabuladorConfig);
-router.get("/", getAllTabulador);
-router.get("/:id", getTabuladorById);
-router.post("/", createTabulador);
-router.delete("/:id", deleteTabulador);
-router.delete("/config/:tabuladorId/:catalogId", deleteTabuladorConfig);
+router
+  .get("/stats", getTabuladorAllStats)
+  .get("/config", getAllTabuladorConfig)
+  .get("/user-stats", getTabuladorUserStats)
+  .post("/config", createTabuladorConfig)
+  .get("/", getAllTabulador)
+  .get("/:id", getTabuladorById)
+  .post("/", createTabulador)
+  .delete("/:id", deleteTabulador)
+  .delete("/config/:tabuladorId/:catalogId", deleteTabuladorConfig);
 
 export default router;

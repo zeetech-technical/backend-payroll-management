@@ -162,3 +162,31 @@ export const updateTabulador = async (
     next(error);
   }
 };
+
+export const getTabuladorUserStats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return next({ type: "custom_error", code: "NOT_FOUND" });
+
+    const tabuladorConfig =
+      await tabuladorService.getTabuladorUserStats(userId);
+    if (!tabuladorConfig)
+      return next({ type: "custom_error", code: "NOT_FOUND" });
+
+    let cpTabuladores = tabuladorConfig.map((tabulador) => {
+      const calcs = calcularSueldoTotal(tabulador);
+      let cp = JSON.parse(JSON.stringify(tabulador));
+      return {
+        ...cp,
+        calcs,
+      };
+    });
+    return res.status(200).json(cpTabuladores);
+  } catch (error) {
+    next(error);
+  }
+};

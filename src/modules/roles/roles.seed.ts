@@ -23,5 +23,15 @@ export const seedRoles = async () => {
       }),
   );
 
+  const permissionsWorker = permissions.filter((p) => p.slug.includes("DASHBOARD:WORKERS"));
+
+  permissionsWorker.forEach(
+    async (p) =>
+      await RolePermissions.create({
+        role_id: mapRoles["worker"],
+        permission_id: p.id,
+      }),
+  );
+
   logger.info("[seed] roles successfully");
 };
