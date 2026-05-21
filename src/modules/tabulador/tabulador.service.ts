@@ -125,7 +125,6 @@ export class TabuladorService {
 
     const tabularId =
       user && user.get({ plain: true })["position"]["tabuladorId"];
-    console.log(tabularId);
 
     if (!tabularId) return [];
     const tabuladores = await Tabulador.findAll({
