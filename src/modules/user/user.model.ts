@@ -3,6 +3,7 @@ import { sequelize } from "../../db/sequelize";
 import { hashChain } from "../../utils/bycript";
 import { Roles } from "../roles/roles.model";
 import { Permissions } from "../permissions/permissions.model";
+import { Position } from "../position/position.model";
 export class User extends Model {
   declare id: number;
   declare password: string;
@@ -12,6 +13,7 @@ export class User extends Model {
   declare m_surname: string;
   declare roles?: Roles[];
   declare permissions?: Permissions[];
+  declare positionId?: number;
 }
 
 User.init(
@@ -57,6 +59,14 @@ User.init(
       type: DataTypes.VIRTUAL,
       get() {
         return `${this.name} ${this.p_surname} ${this.m_surname}`;
+      },
+    },
+    positionId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: Position,
+        key: "id",
       },
     },
   },
@@ -161,4 +171,7 @@ Permissions.belongsToMany(Roles, {
   otherKey: "role_id",
   as: "roles",
 });
+
+User.belongsTo(Position, { foreignKey: "positionId", as: "position" });
+Position.hasMany(User, { foreignKey: "positionId", as: "users" });
 

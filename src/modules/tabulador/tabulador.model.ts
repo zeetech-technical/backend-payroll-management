@@ -54,11 +54,19 @@ TabuladorConfig.init(
     },
     monto: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
+      allowNull: true,
+      get() {
+        const value = this.getDataValue("monto");
+        return value === null ? null : parseFloat(value);
+      },
     },
     porcentaje: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
+      allowNull: true,
+      get() {
+        const value = this.getDataValue("porcentaje");
+        return value === null ? null : parseFloat(value);
+      },
     },
   },
   {

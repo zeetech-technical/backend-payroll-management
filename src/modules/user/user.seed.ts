@@ -39,7 +39,7 @@ export const seedUsers = async () => {
     },
     {
       user_id: userMap["user@test.com"],
-      role_id: roleMap["user"],
+      role_id: roleMap["worker"],
     },
   ]);
   logger.info(`[seed] users successfully [pwd] for users: ${gpwd}`);

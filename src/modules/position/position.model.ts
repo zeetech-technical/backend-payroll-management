@@ -6,6 +6,7 @@ export class Position extends Model {
   declare id: number;
   declare name: string;
   declare description: string;
+  declare tabuladorId: number;
 }
 
 Position.init(
@@ -42,3 +43,4 @@ Position.init(
 );
 
 Position.belongsTo(Tabulador, { foreignKey: "tabuladorId", as: "tabulador" });
+Tabulador.hasMany(Position, { foreignKey: "tabuladorId", as: "positions" });

@@ -7,7 +7,7 @@ export const seedRoles = async () => {
   await Roles.destroy({ where: {}, truncate: true });
   await Roles.bulkCreate([
     { name: "admin", description: "Admin role" },
-    { name: "user", description: "User role" },
+    { name: "worker", description: "Worker role" },
   ]);
 
   const permissions = await Permissions.findAll({ raw: true });
