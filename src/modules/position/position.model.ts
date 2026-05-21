@@ -20,13 +20,8 @@ Position.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     tabuladorId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       references: {
         model: Tabulador,
         key: "id",

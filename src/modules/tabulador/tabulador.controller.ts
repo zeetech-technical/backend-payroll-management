@@ -23,7 +23,7 @@ export const getAllTabulador = async (
     return res.status(200).json(tabuladores);
   } catch (error) {
     next(error);
-  } 
+  }
 };
 
 export const getTabuladorById = async (
@@ -73,15 +73,22 @@ export const createTabuladorConfig = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const { success, error, data } = createTabuladorConfigSchema.safeParse(
+    req.body,
+  );
+  if (!success) return next(error);
   try {
-    const { success, error, data } = createTabuladorConfigSchema.safeParse(
-      req.body,
-    );
-    if (!success) return next(error);
-    const tabuladorConfig = await tabuladorService.createTabuladorConfig(data);
+    const { id: tabuladorId } = await tabuladorService.createTabulador();
+    const conceptos = data.concepts.map((concept) => {
+      return {
+        ...concept,
+        tabuladorId,
+      };
+    });
+
+    await tabuladorService.createTabuladorConfig(conceptos);
     return res.status(201).json({
       message: "tabulador config created successfully",
-      data: tabuladorConfig,
     });
   } catch (error) {
     next(error);

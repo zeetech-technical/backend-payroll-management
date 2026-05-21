@@ -64,8 +64,8 @@ export class TabuladorService {
     const tabulador = await Tabulador.create();
     return tabulador;
   }
-  async createTabuladorConfig(body: ITCreateTabuladorConfigBody) {
-    const tabuladorConfig = await TabuladorConfig.create(body);
+  async createTabuladorConfig(data: any[]) {
+    const tabuladorConfig = await TabuladorConfig.bulkCreate(data);
     return tabuladorConfig;
   }
   async deleteTabulador(id: number) {

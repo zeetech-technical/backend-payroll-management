@@ -1,11 +1,15 @@
-
 import { z } from "zod";
 
-export const createTabuladorConfigSchema = z.object({
-  tabuladorId: z.number(),
+export const conceptSchema = z.object({
   catalogId: z.number(),
-  monto: z.number().optional(),
-  porcentaje: z.number().optional()
+  monto: z.number().optional().nullable(),
+  porcentaje: z.number().optional().nullable(),
 });
 
-export type ITCreateTabuladorConfigBody = z.infer<typeof createTabuladorConfigSchema>
+export const createTabuladorConfigSchema = z.object({
+  concepts: z.array(conceptSchema),
+});
+
+export type ITCreateTabuladorConfigBody = z.infer<
+  typeof createTabuladorConfigSchema
+>;
