@@ -38,4 +38,7 @@ Position.init(
 );
 
 Position.belongsTo(Tabulador, { foreignKey: "tabuladorId", as: "tabulador" });
-Tabulador.hasMany(Position, { foreignKey: "tabuladorId", as: "positions" });
+Tabulador.hasOne(Position, {
+  foreignKey: "tabuladorId",
+  as: "position",
+});

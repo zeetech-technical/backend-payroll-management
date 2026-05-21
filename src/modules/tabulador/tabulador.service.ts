@@ -1,11 +1,60 @@
 import { Catalog, TypeCatalog } from "../catalogs/catalog.model";
+import { Position } from "../position/position.model";
+import { User } from "../user/user.model";
 import { Tabulador, TabuladorConfig } from "./tabulador.model";
-import { ITCreateTabuladorConfigBody } from "./tabulador.schema";
 
 export class TabuladorService {
+  private includeQuery = [
+    {
+      model: Position,
+      as: "position",
+      attributes: ["id", "name"],
+    },
+    {
+      model: TabuladorConfig,
+      as: "tabuladorConfig",
+      attributes: ["id", "monto", "porcentaje"],
+      include: [
+        {
+          model: Catalog,
+          as: "catalog",
+          attributes: ["id", "name"],
+          include: [
+            {
+              model: TypeCatalog,
+              as: "typeCatalog",
+              attributes: ["id", "name", "factor"],
+            },
+          ],
+        },
+      ],
+    },
+  ];
   async getAllTabulador() {
     const tabuladores = await Tabulador.findAll({
+      include: this.includeQuery,
+      order: [[{ model: TabuladorConfig, as: "tabuladorConfig" }, "id", "ASC"]],
+    });
+    return tabuladores;
+  }
+
+  async getAllTabuladorStats() {
+    const tabuladores = await Tabulador.findAll({
       include: [
+        {
+          model: Position,
+          as: "position",
+          required: true,
+          attributes: ["id", "name"],
+          include: [
+            {
+              model: User,
+              as: "user",
+              required: true,
+              attributes: ["id", "name"],
+            },
+          ],
+        },
         {
           model: TabuladorConfig,
           as: "tabuladorConfig",
@@ -19,7 +68,7 @@ export class TabuladorService {
                 {
                   model: TypeCatalog,
                   as: "typeCatalog",
-                  attributes: ["id", "name","factor"],
+                  attributes: ["id", "name", "factor"],
                 },
               ],
             },
@@ -28,31 +77,12 @@ export class TabuladorService {
       ],
       order: [[{ model: TabuladorConfig, as: "tabuladorConfig" }, "id", "ASC"]],
     });
+
     return tabuladores;
   }
   async getTabuladorById(id: number) {
     const tabulador = await Tabulador.findByPk(id, {
-      include: [
-        {
-          model: TabuladorConfig,
-          as: "tabuladorConfig",
-          attributes: ["id", "monto", "porcentaje"],
-          include: [
-            {
-              model: Catalog,
-              as: "catalog",
-              attributes: ["id", "name"],
-              include: [
-                {
-                  model: TypeCatalog,
-                  as: "typeCatalog",
-                  attributes: ["id", "name","factor"],
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      include: this.includeQuery,
     });
     return tabulador;
   }

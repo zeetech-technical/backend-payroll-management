@@ -36,8 +36,11 @@ export const postUser = async (
     if (!result.success) {
       return next(result.error);
     }
+    
     let user = await userService.postUser(result.data);
     const { password, ...userResponse } = user.toJSON();
+
+
     return res.status(201).json(userResponse);
   } catch (error: any) {
     next(error);

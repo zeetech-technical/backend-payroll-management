@@ -11,11 +11,12 @@ import { can } from "../../middlewares/can.middleware";
 
 const router = Router();
 
-router.get("/", can("ROLE:LIST"), getAllRoles);
-router.get("/:id", can("ROLE:READ"), getRoleById);
-router.post("/", can("ROLE:CREATE"), createRole);
-router.patch("/:id", can("ROLE:UPDATE"), updateRole);
-router.delete("/:id", can("ROLE:DELETE"), deleteLogicalRole);
-router.delete("/destroy/:id", can("ROLE:DESTROY"), deleteDestroyRole);
+router
+  .get("/", can("ROLE:LIST"), getAllRoles)
+  .get("/:id", can("ROLE:READ"), getRoleById)
+  .post("/", can("ROLE:CREATE"), createRole)
+  .patch("/:id", can("ROLE:UPDATE"), updateRole)
+  .delete("/:id", can("ROLE:DELETE"), deleteLogicalRole)
+  .delete("/destroy/:id", can("ROLE:DESTROY"), deleteDestroyRole);
 
 export default router;

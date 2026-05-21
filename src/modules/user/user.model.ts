@@ -173,5 +173,5 @@ Permissions.belongsToMany(Roles, {
 });
 
 User.belongsTo(Position, { foreignKey: "positionId", as: "position" });
-Position.hasMany(User, { foreignKey: "positionId", as: "users" });
+Position.hasOne(User, { foreignKey: "positionId", as: "user" });
 

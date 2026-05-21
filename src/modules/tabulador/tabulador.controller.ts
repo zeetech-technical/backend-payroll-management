@@ -12,15 +12,52 @@ export const getAllTabulador = async (
 ) => {
   try {
     const tabuladores = await tabuladorService.getAllTabulador();
-    // let cpTabuladores = tabuladores.map((tabulador) => {
-    //   const calcs = calcularSueldoTotal(tabulador);
-    //   let cp = JSON.parse(JSON.stringify(tabulador))
+    return res.status(200).json(tabuladores);
+  } catch (error) {
+    next(error);
+  }
+};
+export const getTabuladorAllStats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const tabuladores = await tabuladorService.getAllTabuladorStats();
+    let cpTabuladores = tabuladores.map((tabulador) => {
+      const calcs = calcularSueldoTotal(tabulador);
+      let cp = JSON.parse(JSON.stringify(tabulador));
+      return {
+        ...cp,
+        calcs,
+      };
+    });
+    // const dataConTotales = cpTabuladores.map((item) => {
+    //   const totalesGenerales = item.calcs.reduce(
+    //     (acc: any, calc: any) => {
+    //       return {
+    //         sueldoBaseTotal: acc.sueldoBaseTotal + (calc.sueldoBase || 0),
+    //         percepcionesTotal:
+    //           acc.percepcionesTotal + (calc.totalPercepciones || 0),
+    //         deduccionesTotal:
+    //           acc.deduccionesTotal + (calc.totalDeducciones || 0),
+    //         granTotal: acc.granTotal + (calc.total || 0),
+    //       };
+    //     },
+    //     {
+    //       sueldoBaseTotal: 0,
+    //       percepcionesTotal: 0,
+    //       deduccionesTotal: 0,
+    //       granTotal: 0,
+    //     },
+    //   );
+
     //   return {
-    //     ...cp,
-    //     calcs,
+    //     ...item,
+    //     totalesGenerales,
     //   };
     // });
-    return res.status(200).json(tabuladores);
+    return res.status(200).json(cpTabuladores);
   } catch (error) {
     next(error);
   }
@@ -78,18 +115,19 @@ export const createTabuladorConfig = async (
   );
   if (!success) return next(error);
   try {
-    const { id: tabuladorId } = await tabuladorService.createTabulador();
+    const result = await tabuladorService.createTabulador();
     const conceptos = data.concepts.map((concept) => {
       return {
         ...concept,
-        tabuladorId,
+        tabuladorId: result.id,
       };
     });
 
     await tabuladorService.createTabuladorConfig(conceptos);
-    return res.status(201).json({
-      message: "tabulador config created successfully",
-    });
+    const tabuladorCompleto = await tabuladorService.getTabuladorById(
+      result.id,
+    );
+    return res.status(201).json(tabuladorCompleto);
   } catch (error) {
     next(error);
   }
